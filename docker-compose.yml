@@ -1,0 +1,50 @@
+services:
+  api:
+    build: .
+    ports:
+      - "${API_PORT:-5000}:${API_PORT:-5000}"
+    environment:
+      ASPNETCORE_URLS: http://+:${API_PORT:-5000}
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-taskflow};Username=${POSTGRES_USER:-taskflow};Password=${POSTGRES_PASSWORD:-taskflow}
+      Ollama__BaseUrl: http://ollama:11434
+      Ollama__Model: ${OLLAMA_MODEL:-llama3.2}
+      FileStorage__Path: ${FILE_STORAGE_PATH:-/app/uploads}
+      Jwt__Key: ${JWT_KEY:-local-docker-dev-key-change-me-32chars-min}
+      Jwt__Issuer: ${JWT_ISSUER:-TaskFlow.Api}
+      Jwt__Audience: ${JWT_AUDIENCE:-TaskFlow.Api}
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-taskflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-taskflow}
+      POSTGRES_DB: ${POSTGRES_DB:-taskflow}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-taskflow} -d ${POSTGRES_DB:-taskflow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  postgres_data:
+  ollama_data:
+  uploads:

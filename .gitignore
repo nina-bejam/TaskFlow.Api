@@ -9,7 +9,8 @@
 *.user
 *.userosscache
 *.sln.docstates
-*.env
+.env
+!.env.example
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -87,6 +88,8 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 .artifacts/
+*.db
+uploads/
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt

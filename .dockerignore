@@ -1,0 +1,13 @@
+**/.git
+**/.vs
+**/bin
+**/obj
+**/.artifacts
+**/uploads
+**/*.db
+**/*.user
+**/*.suo
+Dockerfile*
+docker-compose*
+README.md
+LICENSE
